@@ -14,4 +14,8 @@ No fixed workflow or backing compute or storage engine is enforced though PIO-Ka
 
 # Gallery
 
- - The first prototype Template is the Kappa-style [Contextual Bandit](contextual-bandit-template.md).
+ - The first prototype Template is the Kappa-style [Contextual Bandit](contextual-bandit-template).
+
+# License
+
+[Apache v2](License.txt)
