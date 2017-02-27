@@ -11,6 +11,6 @@ abstract class Dataset[T](r: String, s: Store) {
   // takes one datum, possibley an Event
   def append(datum: T): Boolean
   // takes a collection of data to append to the Dataset
-  def appendAll(data: List[T]): Seq[Boolean]
+  def appendAll(data: Seq[T]): Seq[Boolean]
 
 }

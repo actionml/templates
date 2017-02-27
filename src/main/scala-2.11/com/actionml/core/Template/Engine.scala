@@ -1,6 +1,9 @@
 package com.actionml.core.template
 
-abstract class Engine[T](dataset: Dataset[T]) {
+abstract class Engine[T, P](d: Dataset[T], p: P) {
+
+  val dataset = d
+  val params = p
 
   def train()
   def input(d: T): Boolean
@@ -11,3 +14,5 @@ abstract class Engine[T](dataset: Dataset[T]) {
 
 case class Query()
 case class QueryResult()
+trait Params
+

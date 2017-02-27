@@ -30,18 +30,6 @@ case class CBCmdLineDriverConfig(
   engineDefJSON: String = ""  // engine.json readFile
 )
 
-case class CBEngineConfig(
-  id: String = "", // required
-  dataset: String = "", // required, readFile now
-  maxIter: Int = 100, // the rest of these are VW params
-  regParam: Double = 0.0,
-  stepSize: Double = 0.1,
-  bitPrecision: Int = 24,
-  modelName: String = "model.vw",
-  namespace: String = "n",
-  maxClasses: Int = 3
-)
-
 object CBCmdLineDriver extends App {
 
   override def main(args: Array[String]): Unit = {
@@ -74,17 +62,6 @@ object CBCmdLineDriver extends App {
   }
 
   def process( config: CBCmdLineDriverConfig ): Unit = {
-
-    implicit val formats = DefaultFormats
-
-    val source = Source.fromFile(config.engineDefJSON)
-    val engineJSON = try source.mkString finally source.close()
-
-    //json4s style
-    val params = parse(engineJSON).extract[CBEngineConfig]
-    // circe style ?????
-    val modelName = params.modelName
-    val debug = true
-    CBStub.readFile(config.inputEvents)
+    CBStub(config).readFile(config.inputEvents)
   }
 }
