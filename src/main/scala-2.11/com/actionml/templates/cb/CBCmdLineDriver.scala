@@ -86,6 +86,5 @@ object CBCmdLineDriver extends App {
     val modelName = params.modelName
     val debug = true
     CBStub.readFile(config.inputEvents)
-    CBStub.run()
   }
 }

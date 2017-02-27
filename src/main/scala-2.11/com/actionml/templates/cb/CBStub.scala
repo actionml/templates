@@ -31,25 +31,22 @@ object CBStub {
   val dataset = new CBDataset("test-resource", store)
 
   def readFile(fileName: String): Boolean = {
-    for (line <- Source.fromFile(fileName).getLines) {
+    val engine = new CBEngine(dataset)
+    val input = Source.fromFile(fileName).getLines.map { line =>
       implicit val formats = Formats
       implicit val defaultFormats = DefaultFormats
       val obj = parse(line).extract[Event]
       println("Text: " + line)
       println("Event case class: " + obj)
-      dataset.append(obj)
-    }
-    println("The completed dataset: " + dataset)
-    true
-  }
+      obj
+    }.toSeq
 
-  def run(): Unit = {
-    println("Dataset ID: " + dataset.resourceId)
-    var i = 0
-    for( event <- dataset.events){
-      println(s"Event #" + i +": " + event)
-    i += 1
-    }
+    engine.inputCol(input)
+
+    println("The completed input: " + dataset)
+    // training happens automatically for Kappa style
+    // engine.train()
+    true
   }
 
 }
