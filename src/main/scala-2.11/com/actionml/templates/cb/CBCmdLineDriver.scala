@@ -18,20 +18,21 @@
 package com.actionml.templates.cb
 
 // driver for running Contextual Bandit as an early scaffold
+import com.actionml.core.template.Dataset
 import org.json4s._
-import org.json4s.native.JsonMethods._
+import org.json4s.jackson.JsonMethods._
 
 import scala.io.Source
 
-case class CBDriverConfig(
-  modelOut: String = "", // dir model storage
-  inputEvents: String = "", // events file
-  engineDefJSON: String = ""  // engine.json file
+case class CBCmdLineDriverConfig(
+  modelOut: String = "", // db for model
+  inputEvents: String = "", // events readFile
+  engineDefJSON: String = ""  // engine.json readFile
 )
 
 case class CBEngineConfig(
   id: String = "", // required
-  dataset: String = "", // required, file now
+  dataset: String = "", // required, readFile now
   maxIter: Int = 100, // the rest of these are VW params
   regParam: Double = 0.0,
   stepSize: Double = 0.1,
@@ -41,20 +42,20 @@ case class CBEngineConfig(
   maxClasses: Int = 3
 )
 
-object CBDriver {
+object CBCmdLineDriver extends App {
 
-  def main(args: Array[String]): Unit = {
-    val parser = new scopt.OptionParser[CBDriverConfig]("scopt") {
+  override def main(args: Array[String]): Unit = {
+    val parser = new scopt.OptionParser[CBCmdLineDriverConfig]("scopt") {
       head("scopt", "3.x")
 
       opt[String]('m', "model").action((x, c) =>
         c.copy(modelOut = x)).text("Model storage location, eventually from the Engine config")
 
-      opt[String]('d', "dataset").action((x, c) =>
+      opt[String]('d', "dataset").required().action((x, c) =>
         c.copy(inputEvents = x)).text("Event dataset input location, eventually fome the Engine config")
 
       opt[String]('e', "engine").required().action((x, c) =>
-        c.copy(engineDefJSON = x)).text("Engine config, JSON file now, but eventually from shared key/value store")
+        c.copy(engineDefJSON = x)).text("Engine config, JSON readFile now, but eventually from shared key/value store")
 
       help("help").text("prints this usage text")
 
@@ -63,7 +64,7 @@ object CBDriver {
     }
 
     // parser.parse returns Option[C]
-    parser.parse(args, CBDriverConfig()) match {
+    parser.parse(args, CBCmdLineDriverConfig()) match {
       case Some(config) =>
         process(config)
 
@@ -72,15 +73,19 @@ object CBDriver {
     }
   }
 
-  def process( config: CBDriverConfig ): Unit = {
+  def process( config: CBCmdLineDriverConfig ): Unit = {
 
     implicit val formats = DefaultFormats
 
     val source = Source.fromFile(config.engineDefJSON)
     val engineJSON = try source.mkString finally source.close()
 
-    val params = org.json4s.native.JsonMethods.parse(engineJSON).extract[CBEngineConfig]
+    //json4s style
+    val params = parse(engineJSON).extract[CBEngineConfig]
+    // circe style ?????
     val modelName = params.modelName
     val debug = true
+    CBStub.readFile(config.inputEvents)
+    CBStub.run()
   }
 }

@@ -8,8 +8,11 @@ val json4sVersion = "3.3.0"
 
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "3.5.0",
-  "org.json4s" %% "json4s-native" % json4sVersion
-)
+  "org.json4s" %% "json4s-jackson" % json4sVersion,
+  "joda-time" % "joda-time" % "2.9.7",
+  // case class serialization may be useful but may not work with the latest Mongo or casbah
+  //  "com.github.salat" %% "salat" % "1.10.0",
+  "org.mongodb" %% "casbah" % "3.1.1")
 
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
@@ -21,3 +24,4 @@ resolvers += "Central Maven" at "http://central.maven.org/maven2/"
 
 resolvers += "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
