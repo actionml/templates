@@ -6,13 +6,19 @@ scalaVersion := "2.11.8"
 
 val json4sVersion = "3.3.0"
 
+val circeVersion = "0.7.0"
+
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "3.5.0",
   "org.json4s" %% "json4s-jackson" % json4sVersion,
   "joda-time" % "joda-time" % "2.9.7",
   // case class serialization may be useful but may not work with the latest Mongo or casbah
   //  "com.github.salat" %% "salat" % "1.10.0",
-  "org.mongodb" %% "casbah" % "3.1.1")
+  "org.mongodb" %% "casbah" % "3.1.1",
+  // circe json handling
+  "io.circe" %% "circe-core" % circeVersion,
+  "io.circe" %% "circe-generic" % circeVersion,
+  "io.circe" %% "circe-parser" % circeVersion)
 
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
