@@ -6,22 +6,9 @@ import java.io.{ObjectOutputStream, FileOutputStream, ObjectInputStream, FileInp
 import java.nio.file.{Files, Paths}
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
+import org.joda.time.{DateTime, Period}
 
 import scala.io.Source
-
-case class Properties (
-  testPeriodStart: String, // ISO8601 date
-  pageVariants: Seq[String], //["17","18"]
-  testPeriodEnd:String) // ISO8601 date
-
-case class Event (
-  eventId: String,
-  event: String,
-  entityType: Option[String] = None,
-  entityId: Option[String] = None,
-  properties: Option[Map[String, Any]] = None,
-  eventTime: String, // ISO8601 date
-  creationTime: String) // ISO8601 date
 
 
 case class CBStub (config: CBCmdLineDriverConfig) {
@@ -47,15 +34,19 @@ case class CBStub (config: CBCmdLineDriverConfig) {
 
   def readFile(fileName: String): Boolean = {
     var i = 0
-    var input = Seq[Event]() // Source.fromFile closes the Stream for each .map so use .foreach
+    var input = Seq[CBEvent]() // Source.fromFile closes the Stream for each .map so use .foreach
     Source.fromFile(fileName).getLines().foreach { line =>
       implicit val formats = Formats
       implicit val defaultFormats = DefaultFormats
-      val obj = parse(line).extract[Event]
-      println("Text: " + line)
-      println("Event #" + i + ": " + obj)
+      val (event, errcode) = engine.parseAndValidateInput(line)
+      if( errcode != 0) {
+        println("Got and error validating string: " + line)
+      } else {
+        println("Event #" + i + ": " + event)
+        println("Text: " + line)
+        input = input :+ event
+      }
       i += 1
-      input = input :+ obj
     }
 
     engine.inputCol(input)
@@ -63,6 +54,9 @@ case class CBStub (config: CBCmdLineDriverConfig) {
     println("The completed input: " + dataset)
     // training happens automatically for Kappa style
     // engine.train() should be triggered explicitly for Lambda
+
+    val result = engine.query(CBQuery("pferrel", "group 1"))
+    println("Queried and received variant: " + result.variant + " groupId: " + result.groupId)
     true
   }
 
