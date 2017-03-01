@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.9.7",
   // case class serialization may be useful but may not work with the latest Mongo or casbah
   //  "com.github.salat" %% "salat" % "1.10.0",
-  "org.mongodb" %% "casbah" % "3.1.1")
+  "org.mongodb" %% "casbah" % "2.8.2",
+  "com.github.salat" %% "salat" % "1.10.1-SNAPSHOT")
 
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 

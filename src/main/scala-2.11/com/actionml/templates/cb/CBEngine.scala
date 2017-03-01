@@ -39,7 +39,6 @@ class CBEngine(dataset: CBDataset, params: CBEngineParams)
     (event, 0)
   }
 
-
   def query(query: CBQuery): CBQueryResult = {CBQueryResult()}
 
 }
